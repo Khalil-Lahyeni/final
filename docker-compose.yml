@@ -1,0 +1,125 @@
+networks:
+  fleet-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  grafana_data:
+
+# ──────────────────────────────────────────────────────────────
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: fleet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - fleet-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis :
+    image: redis:7-alpine
+    container_name: fleet-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - fleet-network
+  
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.5.5
+    container_name: fleet-keycloak
+    restart: unless-stopped
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - fleet-network
+    healthcheck:
+      test: ["CMD", "bash", "-lc", "echo > /dev/tcp/127.0.0.1/9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  micro-service:
+    image: hashicorp/http-echo:1.0.0
+    container_name: fleet-micro-service
+    restart: unless-stopped
+    command: ["-listen=:8081", "-text=Micro-service is up"]
+    networks:
+      - fleet-network
+
+  # # ════════════════════════════════
+  # # 6. API GATEWAY
+  # # ════════════════════════════════
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: fleet-api-gateway
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      ANGULAR_APP_URL: ${ANGULAR_APP_URL}
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      micro-service:
+        condition: service_started
+    networks:
+      - fleet-network
+
+  # # ════════════════════════════════
+  # # 8. FRONTEND — ANGULAR
+  # # ════════════════════════════════
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fleet-frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - fleet-network
