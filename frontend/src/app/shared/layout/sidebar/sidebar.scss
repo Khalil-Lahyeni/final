@@ -1,0 +1,169 @@
+/* --- Sidebar container --- */
+.sidebar {
+  width: 16rem;                       /* Responsive width */
+  height: 100vh;
+  background: #1e1e2d;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+}
+
+/* --- Logo --- */
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.logo-text {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05rem;
+}
+
+
+/* Hamburger button */
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 0.4rem;
+  transition: background 0.3s ease;
+}
+
+.sidebar-toggle i {
+  font-size: 2rem;
+  color: #fff;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+
+/* --- Divider --- */
+.sidebar-divider {
+  border-color: rgba(255, 255, 255, 0.15);
+  width: 100%;
+}
+
+/* --- Navigation area --- */
+.sidebar-nav {
+  flex-grow: 1;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: #d1d1e0;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Hover + active */
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: #3a3a55;
+  color: #fff;
+}
+
+/* --- Icons --- */
+.sidebar-icon {
+  font-size: 1.4rem;
+  width: 2rem;
+  text-align: center;
+}
+
+/* --- Footer (user + logout) --- */
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* User info */
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: #fff;
+  transition: background 0.3s;
+
+  &:hover,
+  &.active {
+    background: #3a3a55;
+  }
+}
+
+
+/* Logout button */
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #e27c7c;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sidebar-logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Label */
+.sidebar-label {
+  font-size: 1rem;
+}
+
+
+
+/* ─────────────────────────────────────────────
+   SIDEBAR COLLAPSED MODE
+──────────────────────────────────────────────*/
+.sidebar.collapsed {
+  width: 5rem !important;
+  padding: 2rem 0.5rem;
+}
+
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .sidebar-label {
+  display: none !important;
+}
+
+.sidebar.collapsed .sidebar-link,
+.sidebar.collapsed .sidebar-user,
+.sidebar.collapsed .sidebar-logout {
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+.sidebar.collapsed .sidebar-icon {
+  width: auto;
+}
+
+.sidebar.collapsed .sidebar-divider {
+  width: 60%;
+  margin: auto;
+}
+
+.sidebar.collapsed .sidebar-footer {
+  align-items: center;
+}

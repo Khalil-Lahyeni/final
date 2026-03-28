@@ -1,0 +1,27 @@
+<div class="profile-container">
+
+  <div class="profile-card">
+    <div class="profile-avatar">
+      <i class="bi bi-person-circle"></i>
+    </div>
+
+    <h2 class="profile-username">
+      {{ user()?.preferred_username }}
+    </h2>
+
+    <p class="profile-email">
+      {{ user()?.email }}
+    </p>
+
+    <div class="profile-info">
+      <div><strong>Nom :</strong> {{ user()?.family_name }}</div>
+      <div><strong>Prénom :</strong> {{ user()?.given_name }}</div>
+      <div><strong>Roles :</strong> {{ user()?.roles?.join(', ') }}</div>
+    </div>
+
+    <button class="logout-btn" (click)="auth.logout()">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+
+</div>
