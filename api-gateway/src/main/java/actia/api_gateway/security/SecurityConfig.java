@@ -65,12 +65,13 @@ public class SecurityConfig {
         OidcClientInitiatedServerLogoutSuccessHandler oidc =
                 new OidcClientInitiatedServerLogoutSuccessHandler(clientRegistrationRepository);
 
-        oidc.setPostLogoutRedirectUri(logoutUrl);
+        oidc.setPostLogoutRedirectUri("{baseUrl}");
 
         return (exchange, authentication) ->
-                // Étape 1 : Invalidation session + suppression cookie
-                exchange.getExchange().getSession()
-                        .flatMap(WebSession::invalidate)
+                // Étape 1 : D'abord le logout OIDC (a besoin du id_token dans la session)
+                oidc.onLogoutSuccess(exchange, authentication)
+                        .then(exchange.getExchange().getSession()
+                                .flatMap(WebSession::invalidate))
                         .then(Mono.fromRunnable(() -> {
                             exchange.getExchange().getResponse().addCookie(
                                     ResponseCookie.from("SESSION", "")
@@ -78,11 +79,8 @@ public class SecurityConfig {
                                             .maxAge(0)
                                             .httpOnly(true)
                                             .build());
-                        }))
-                        // Étape 2 : Continuer avec logout OIDC
-                        .then(oidc.onLogoutSuccess(exchange, authentication));
+                        }));
     }
-
     private ServerAuthenticationSuccessHandler redirectHandler() {
         return (WebFilterExchange webFilterExchange, Authentication authentication) -> {
             ServerWebExchange exchange = webFilterExchange.getExchange();

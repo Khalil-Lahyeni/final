@@ -66,7 +66,7 @@ export class AuthService {
   }
 
   login(): void {
-    window.location.href = `${environment.apiGatewayUrl}/api/collecte/ping`;
+    window.location.href = `${environment.apiGatewayUrl}/api/auth/login`;
   }
 
   logout(): void {
