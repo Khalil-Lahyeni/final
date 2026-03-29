@@ -5,18 +5,18 @@ networks:
 volumes:
   postgres_data:
   grafana_data:
-
-# ──────────────────────────────────────────────────────────────
-services:
-
-  postgres:
+  mosquitto_data:
+  mosquitto_log:
+  
+services:  
+  postgres: 
     image: postgres:16-alpine
     container_name: fleet-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_DB: keycloak_db          
     ports:
       - "5432:5432"
     volumes:
@@ -25,20 +25,24 @@ services:
     networks:
       - fleet-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d keycloak_db"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  redis :
-    image: redis:7-alpine
-    container_name: fleet-redis
-    restart: unless-stopped
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: fleet-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
     ports:
-      - "6379:6379"
+      - "5050:80"
     networks:
       - fleet-network
-  
+  # ════════════════════════════════
   keycloak:
     image: quay.io/keycloak/keycloak:26.5.5
     container_name: fleet-keycloak
@@ -48,14 +52,14 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak_db
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8080:8080"
     volumes:
-      - ./keycloak/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     depends_on:
       postgres:
         condition: service_healthy
@@ -65,21 +69,21 @@ services:
       test: ["CMD", "bash", "-lc", "echo > /dev/tcp/127.0.0.1/9000"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 30s
+      retries: 5  
+      start_period: 30s  
+  
+  # ════════════════════════════════
 
   micro-service:
     image: hashicorp/http-echo:1.0.0
     container_name: fleet-micro-service
     restart: unless-stopped
     command: ["-listen=:8081", "-text=Micro-service is up"]
+    ports:
+      - "8081:8081"
     networks:
       - fleet-network
-
-  # # ════════════════════════════════
-  # # 6. API GATEWAY
-  # # ════════════════════════════════
-
+    # ════════════════════════════════
   api-gateway:
     build:
       context: ./api-gateway
@@ -93,9 +97,9 @@ services:
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
-      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      SPRING_PROFILES_ACTIVE: docker
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       ANGULAR_APP_URL: ${ANGULAR_APP_URL}
     depends_on:
       keycloak:
@@ -104,13 +108,20 @@ services:
         condition: service_started
       micro-service:
         condition: service_started
+    networks:   
+      - fleet-network
+    # ════════════════════════════════ 
+  redis : 
+    image: redis:7-alpine
+    container_name: fleet_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
     networks:
       - fleet-network
-
-  # # ════════════════════════════════
-  # # 8. FRONTEND — ANGULAR
-  # # ════════════════════════════════
-
+  
+  # ════════════════════════════════ 
+  
   frontend:
     build:
       context: ./frontend
@@ -119,7 +130,39 @@ services:
     restart: unless-stopped
     ports:
       - "4200:80"
+    environment:
+      API_GATEWAY_URL: ${API_GATEWAY_URL:-http://api-gateway:8888}
     depends_on:
       - api-gateway
     networks:
-      - fleet-network
+      - fleet-network 
+# # ════════════════════════════════
+  # grafana:
+  #   image: grafana/grafana:11.3.0
+  #   container_name: fleet-grafana
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3001:3000"
+  #   environment:
+  #     GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+  #     GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #     - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+  #   networks:
+  #     - fleet-network
+  # ════════════════════════════════
+#   mosquitto:
+#     image: eclipse-mosquitto:2.0
+#     container_name: fleet-mosquitto
+#     restart: unless-stopped
+#     ports:
+#       - "1883:1883"
+#       - "9001:9001"
+#     volumes:
+#       - ./messaging/mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf
+#       - mosquitto_data:/mosquitto/data
+#       - mosquitto_logs:/mosquitto/log
+#     networks:
+#       - fleet-network

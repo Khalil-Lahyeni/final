@@ -25,7 +25,7 @@ import java.net.URI;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-    @Value("${app.logout-url}")
+        @Value("${app.logout-url:http://localhost:4200}")
     private String logoutUrl;
 
     private final ReactiveClientRegistrationRepository clientRegistrationRepository;

@@ -2,6 +2,7 @@ server:
   port: 8888
 
 app:
+  logout-url: ${ANGULAR_APP_URL:http://localhost:4200}
   allowedOrigins:
     angular-app-url: ${ANGULAR_APP_URL:http://localhost:4200}
 spring:

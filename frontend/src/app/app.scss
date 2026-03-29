@@ -1,149 +1,48 @@
-:host {
-	--bg-top: #eef5ff;
-	--bg-bottom: #d8e7ff;
-	--ink: #10243a;
-	--ink-soft: #39536f;
-	--card: rgba(255, 255, 255, 0.82);
-	--line: rgba(16, 36, 58, 0.14);
-	--accent: #0e7c86;
-	--accent-hover: #0b646d;
-	--danger: #a33232;
-
-	display: block;
-	min-height: 100vh;
-	padding: 2rem;
-	box-sizing: border-box;
-	background:
-		radial-gradient(circle at 15% 15%, rgba(14, 124, 134, 0.18), transparent 30%),
-		radial-gradient(circle at 88% 82%, rgba(201, 76, 60, 0.2), transparent 28%),
-		linear-gradient(165deg, var(--bg-top), var(--bg-bottom));
-	color: var(--ink);
-	font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+:root {
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 5rem;
 }
 
-.shell {
-	max-width: 980px;
-	margin: 0 auto;
-	display: grid;
-	gap: 1.25rem;
+
+/* --- Structure générale --- */
+.app-container {
+  display: flex;
+  height: 100vh;    /* Très important pour garder le sidebar fixe */
+  width: 100%;
 }
 
-.hero,
-.panel {
-	border: 1px solid var(--line);
-	background: var(--card);
-	border-radius: 18px;
-	backdrop-filter: blur(8px);
-	box-shadow: 0 10px 30px rgba(16, 36, 58, 0.12);
-	padding: 1.4rem;
+/* Sideb*/
+app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
-.eyebrow {
-	margin: 0;
-	text-transform: uppercase;
-	letter-spacing: 0.11em;
-	color: var(--ink-soft);
-	font-size: 0.76rem;
-	font-weight: 700;
+/* --- Contenu à droite du sidebar --- */
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  margin-left: 16rem;
+  overflow-y: auto;
 }
 
-h1 {
-	margin: 0.35rem 0 0.25rem;
-	font-size: clamp(1.55rem, 3.5vw, 2.5rem);
-	line-height: 1.05;
+/* When collapsed */
+.app-content.collapsed {
+  margin-left: 5rem;
 }
 
-.subtitle {
-	margin: 0;
-	color: var(--ink-soft);
-	max-width: 65ch;
-}
-
-.actions {
-	margin-top: 1.2rem;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.65rem;
-}
-
-.btn {
-	border: 1px solid var(--line);
-	border-radius: 12px;
-	background: #f5f9ff;
-	color: var(--ink);
-	font-weight: 700;
-	padding: 0.65rem 1rem;
-	cursor: pointer;
-	transition: transform 130ms ease, background-color 130ms ease;
-}
-
-.btn:hover {
-	transform: translateY(-1px);
-	background: #ecf4ff;
-}
-
-.btn:disabled {
-	opacity: 0.66;
-	cursor: not-allowed;
-}
-
-.btn-primary {
-	border-color: transparent;
-	color: #fff;
-	background: var(--accent);
-}
-
-.btn-primary:hover {
-	background: var(--accent-hover);
-}
-
-.meta {
-	margin-top: 1rem;
-	border-top: 1px dashed var(--line);
-	padding-top: 0.8rem;
-	color: var(--ink-soft);
-	font-size: 0.94rem;
-}
-
-h2 {
-	margin: 0;
-	font-size: 1.15rem;
-}
-
-.output {
-	margin: 0.85rem 0 0;
-	padding: 0.9rem;
-	border-radius: 12px;
-	border: 1px solid var(--line);
-	background: #f9fcff;
-	white-space: pre-wrap;
-	overflow-wrap: anywhere;
-	font-family: 'IBM Plex Mono', Consolas, monospace;
-	min-height: 98px;
-}
-
-.output.error {
-	border-color: rgba(163, 50, 50, 0.35);
-	color: var(--danger);
-	background: #fff7f7;
-}
-
-@media (max-width: 680px) {
-	:host {
-		padding: 1rem;
-	}
-
-	.hero,
-	.panel {
-		padding: 1rem;
-		border-radius: 14px;
-	}
-
-	.actions {
-		gap: 0.5rem;
-	}
-
-	.btn {
-		width: 100%;
-	}
+/* --- Zone principale (router) --- */
+.app-main {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  box-shadow: 0 0.2rem 0.8rem rgba(172, 21, 21, 0.05);
+  display: flex;
+  flex-direction: column;
 }

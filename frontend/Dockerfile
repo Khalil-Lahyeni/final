@@ -1,15 +1,22 @@
 FROM node:22-alpine AS builder
+
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+COPY package.json package-lock.json ./
+RUN npm ci --silent
 
 COPY . .
-RUN npm run build
 
-FROM nginx:1.27-alpine
+RUN npm run build -- --configuration production
+
+FROM nginx:alpine
+
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html/
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist/fleet-frontend/browser /usr/share/nginx/html
 
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]
