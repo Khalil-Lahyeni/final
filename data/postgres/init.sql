@@ -1,10 +1,16 @@
+-- Creation idempotente des bases
+SELECT 'CREATE DATABASE keycloak_db'
+WHERE NOT EXISTS (
+	SELECT FROM pg_database WHERE datname = 'keycloak_db'
+)
+\gexec
 
--- Création de la base Keycloak (si elle n'existe pas)
-CREATE DATABASE keycloak_db;
+SELECT 'CREATE DATABASE railway_db'
+WHERE NOT EXISTS (
+	SELECT FROM pg_database WHERE datname = 'railway_db'
+)
+\gexec
 
--- Création de la base Railway
-CREATE DATABASE railway_db;
-
--- Optionnel : donner les droits à l'utilisateur
-GRANT ALL PRIVILEGES ON DATABASE keycloak_db TO ${POSTGRES_USER};
-GRANT ALL PRIVILEGES ON DATABASE railway_db TO ${POSTGRES_USER};
+-- Le script est execute avec l'utilisateur de bootstrap Postgres
+GRANT ALL PRIVILEGES ON DATABASE keycloak_db TO CURRENT_USER;
+GRANT ALL PRIVILEGES ON DATABASE railway_db TO CURRENT_USER;

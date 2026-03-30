@@ -1,0 +1,82 @@
+server:
+  port: 8881
+
+spring:
+  application:
+    name: collector-service
+
+  # ── PostgreSQL ──
+  datasource:
+    url: jdbc:postgresql://localhost:5431/railway_db
+    username: ${POSTGRES_USER:fleet_user}
+    password: ${POSTGRES_PASSWORD:fleet_pass}
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+#   # ── Kafka ──
+#   kafka:
+#     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+#     producer:
+#       key-serializer:   org.apache.kafka.common.serialization.StringSerializer
+#       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+#   # ── JWT Validation (clé publique Keycloak) ──
+#   security:
+#     oauth2:
+#       resourceserver:
+#         jwt:
+#           issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/${KEYCLOAK_REALM:fleet-realm}
+
+# # ── MQTT ──
+# mqtt:
+#   broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
+#   client-id:  collector-service-${random.uuid}
+#   topic:      fleet/equipment/+/telemetry
+
+# ── Actuator ──
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+# ── Logs ──
+logging:
+  level:
+    com.fleetmanagement.collector: DEBUG
+    org.springframework.kafka:     WARN
+    org.springframework.security:  INFO
+
+---
+# ══════════════════════════════
+# Profil Docker
+# ══════════════════════════════
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/railway_db
+    username: ${POSTGRES_USER:fleet_user}
+    password: ${POSTGRES_PASSWORD:fleet_pass}
+  # kafka:
+  #   bootstrap-servers: kafka:29092
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/${KEYCLOAK_REALM:fleet-realm}
+
+# mqtt:
+#   broker-url: tcp://mosquitto:1883

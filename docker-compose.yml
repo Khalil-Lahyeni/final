@@ -4,6 +4,7 @@ networks:
 
 volumes:
   postgres_data:
+  pgadmin_data:
   grafana_data:
   mosquitto_data:
   mosquitto_log:
@@ -13,12 +14,14 @@ services:
     image: postgres:16-alpine
     container_name: fleet-postgres
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: keycloak_db          
     ports:
-      - "5432:5432"
+      - "5431:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./data/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -37,7 +40,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
-      - ./data/pgadmin:/var/lib/pgadmin
+      - pgadmin_data:/var/lib/pgadmin
     ports:
       - "5050:80"
     networks:
@@ -74,13 +77,24 @@ services:
   
   # ════════════════════════════════
 
-  micro-service:
-    image: hashicorp/http-echo:1.0.0
-    container_name: fleet-micro-service
+  collector-service:
+    build:
+      context: ./collector
+      dockerfile: Dockerfile
+    container_name: fleet-collector-service
     restart: unless-stopped
-    command: ["-listen=:8081", "-text=Micro-service is up"]
     ports:
-      - "8081:8081"
+      - "8881:8881"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     networks:
       - fleet-network
     # ════════════════════════════════
@@ -106,7 +120,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      micro-service:
+      collector-service:
         condition: service_started
     networks:   
       - fleet-network
