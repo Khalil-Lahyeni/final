@@ -26,12 +26,12 @@ spring:
 #       key-serializer:   org.apache.kafka.common.serialization.StringSerializer
 #       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
-#   # ── JWT Validation (clé publique Keycloak) ──
-#   security:
-#     oauth2:
-#       resourceserver:
-#         jwt:
-#           issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/${KEYCLOAK_REALM:fleet-realm}
+  # ── JWT Validation (clé publique Keycloak) ──
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/fleet-management
 
 # # ── MQTT ──
 # mqtt:
@@ -67,8 +67,6 @@ spring:
 
   datasource:
     url: jdbc:postgresql://postgres:5432/railway_db
-    username: ${POSTGRES_USER:fleet_user}
-    password: ${POSTGRES_PASSWORD:fleet_pass}
   # kafka:
   #   bootstrap-servers: kafka:29092
 
@@ -76,7 +74,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/${KEYCLOAK_REALM:fleet-realm}
+          issuer-uri: http://keycloak:8080/realms/fleet-management
 
 # mqtt:
 #   broker-url: tcp://mosquitto:1883
