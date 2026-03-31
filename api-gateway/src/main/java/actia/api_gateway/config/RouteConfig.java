@@ -21,6 +21,16 @@ public class RouteConfig {
                         .uri("http://localhost:8081")
                 )
 
+                // ── Collector Service - Trains ──
+                .route("Trains", route -> route
+                        .path("/api/trains/**")
+                        .filters(filter -> filter
+                                .stripPrefix(1)
+                                .tokenRelay()
+                        )
+                        .uri("http://localhost:8881")
+                )
+
                 .build();
     }
 }

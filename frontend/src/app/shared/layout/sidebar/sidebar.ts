@@ -25,6 +25,7 @@ export class Sidebar {
 
   readonly navItems: NavItem[] = [
     { label: 'Dashboard',  icon: 'bi-speedometer2', route: '/dashboard'  },
+    { label: 'Trains',     icon: 'bi-train-freight', route: '/trains'     },
   ];
 
   readonly username = computed(() => this.authService.username());

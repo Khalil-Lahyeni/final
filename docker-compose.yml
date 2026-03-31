@@ -77,26 +77,26 @@ services:
   
   # ════════════════════════════════
 
-  collector-service:
-    build:
-      context: ./collector
-      dockerfile: Dockerfile
-    container_name: fleet-collector-service
-    restart: unless-stopped
-    ports:
-      - "8881:8881"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
-    depends_on:
-      postgres:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
-    networks:
-      - fleet-network
+  # collector-service:
+  #   build:
+  #     context: ./collector
+  #     dockerfile: Dockerfile
+  #   container_name: fleet-collector-service
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8881:8881"
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: docker
+  #     POSTGRES_USER: ${POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     keycloak:
+  #       condition: service_healthy
+  #   networks:
+  #     - fleet-network
     # ════════════════════════════════
   api-gateway:
     build:
@@ -120,8 +120,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      collector-service:
-        condition: service_started
+      # collector-service:
+      #   condition: service_started
     networks:   
       - fleet-network
     # ════════════════════════════════ 
