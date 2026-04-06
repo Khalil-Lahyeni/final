@@ -1,61 +1,35 @@
-<div class="train-list-container">
-  <div class="header">
-    <h1>Liste des Trains</h1>
-    <button class="btn btn-refresh" (click)="refreshTrains()" [disabled]="isLoading">
-      {{ isLoading ? 'Chargement...' : 'Rafraîchir' }}
-    </button>
-  </div>
+<div class="train-container">
 
-  <!-- Message d'erreur -->
-  <div *ngIf="errorMessage" class="error-message">
-    <p>{{ errorMessage }}</p>
-  </div>
+  <h2>Liste des Trains</h2>
 
-  <!-- Chargement -->
-  <div *ngIf="isLoading" class="loading">
-    <div class="spinner"></div>
-    <p>Chargement des trains...</p>
-  </div>
+  @if (loading) {
+    <div class="loading">
+      Chargement...
+    </div>
+  } @else {
 
-  <!-- Tableau de trains -->
-  <div *ngIf="!isLoading && trains.length > 0" class="trains-table-wrapper">
-    <table class="trains-table">
+    <table class="train-table">
       <thead>
         <tr>
-          <th>ID Train</th>
-          <th>Statut PACIS</th>
-          <th>Statut CCTV</th>
-          <th>Statut Caméra Arrière</th>
+          <th>ID</th>
+          <th>Status PACIS</th>
+          <th>Status CCTV</th>
+          <th>Status Rear View</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr *ngFor="let train of trains" class="train-row">
-          <td class="train-id">{{ train.train_id }}</td>
-          <td>
-            <span [ngClass]="getStatusClass(train.pacis_status)" class="status-badge">
-              <span class="status-icon">{{ getStatusIcon(train.pacis_status) }}</span>
-              {{ train.pacis_status }}
-            </span>
-          </td>
-          <td>
-            <span [ngClass]="getStatusClass(train.cctv_status)" class="status-badge">
-              <span class="status-icon">{{ getStatusIcon(train.cctv_status) }}</span>
-              {{ train.cctv_status }}
-            </span>
-          </td>
-          <td>
-            <span [ngClass]="getStatusClass(train.rear_view_status)" class="status-badge">
-              <span class="status-icon">{{ getStatusIcon(train.rear_view_status) }}</span>
-              {{ train.rear_view_status }}
-            </span>
-          </td>
-        </tr>
+        @for (train of trains; track train.trainId) {
+          <tr>
+            <td>{{ train.trainId }}</td>
+            <td>{{ train.pacisStatus }}</td>
+            <td>{{ train.cctvStatus }}</td>
+            <td>{{ train.rearViewStatus }}</td>
+          </tr>
+        }
       </tbody>
     </table>
-  </div>
 
-  <!-- Aucun train trouvé -->
-  <div *ngIf="!isLoading && trains.length === 0 && !errorMessage" class="no-data">
-    <p>Aucun train trouvé.</p>
-  </div>
+  }
+
 </div>

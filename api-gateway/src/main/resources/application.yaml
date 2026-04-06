@@ -18,7 +18,7 @@ spring:
         registration:
           keycloak:
             client-id: actia-app
-            client-secret: PV7qirh2XfqcMqsAnbEg6f7rSgFeb7aW
+            client-secret: 5YUBMrGI7kHJoF7mz5Ehgy6BTmW9cz9J
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
             scope:

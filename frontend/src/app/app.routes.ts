@@ -26,7 +26,7 @@ export const routes: Routes = [
 
   {
     path: 'trains', canActivate: [authGuard],
-    loadComponent: () => import('./features/trains/train-list/train-list').then(m => m.TrainListComponent)
+    loadComponent: () => import('./features/trains/train-list/train-list').then(m => m.TrainList)
   }
 
 ];

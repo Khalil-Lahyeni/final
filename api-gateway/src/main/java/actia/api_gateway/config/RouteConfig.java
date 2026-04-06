@@ -11,21 +11,11 @@ public class RouteConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
 
-                // ── Micro-service ──
-                .route("Micro-service", route -> route
-                        .path("/api/micro-service/**")
-                        .filters(filter -> filter
-                                .stripPrefix(2)
-                                .tokenRelay()
-                        )
-                        .uri("http://localhost:8081")
-                )
-
                 // ── Collector Service - Trains ──
                 .route("Trains", route -> route
                         .path("/api/trains/**")
                         .filters(filter -> filter
-                                .stripPrefix(1)
+                                .stripPrefix(2)
                                 .tokenRelay()
                         )
                         .uri("http://localhost:8881")

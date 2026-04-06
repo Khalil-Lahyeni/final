@@ -25,7 +25,7 @@ import java.net.URI;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-        @Value("${app.logout-url:http://localhost:4200}")
+    @Value("${app.logout-url:http://localhost:4200}")
     private String logoutUrl;
 
     private final ReactiveClientRegistrationRepository clientRegistrationRepository;
@@ -65,7 +65,7 @@ public class SecurityConfig {
         OidcClientInitiatedServerLogoutSuccessHandler oidc =
                 new OidcClientInitiatedServerLogoutSuccessHandler(clientRegistrationRepository);
 
-        oidc.setPostLogoutRedirectUri("{baseUrl}");
+        oidc.setPostLogoutRedirectUri(logoutUrl);
 
         return (exchange, authentication) ->
                 // Étape 1 : D'abord le logout OIDC (a besoin du id_token dans la session)

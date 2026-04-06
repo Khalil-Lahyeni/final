@@ -16,7 +16,12 @@ isSidebarCollapsed = false;
 constructor() {
   window.addEventListener('storage', (event) => {
     if (event.key === 'fleet-logout') {
-      window.location.href = `${environment.apiGatewayUrl}/logout`;
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${environment.apiGatewayUrl}/logout`;
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
     }
   });
 }

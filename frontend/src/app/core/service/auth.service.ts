@@ -72,7 +72,14 @@ export class AuthService {
   logout(): void {
     this._user.set(null);
     localStorage.setItem('fleet-logout', Date.now().toString());
-    window.location.href = `${environment.apiGatewayUrl}/logout`;
+
+    // Trigger server logout with POST to avoid the default GET confirmation page.
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `${environment.apiGatewayUrl}/logout`;
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
   }
 
   hasRole(role: string): boolean {
