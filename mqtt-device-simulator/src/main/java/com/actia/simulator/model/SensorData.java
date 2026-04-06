@@ -1,31 +1,54 @@
 package com.actia.simulator.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SensorData {
 
-    @JsonProperty("device_id")
-    private String deviceId;
+    private String trainId;
+    private String pacisStatus;
+    private String cctvStatus;
+    private String rearViewStatus;
 
-    @JsonProperty("sensor_type")
-    private String sensorType;
+    public SensorData() {
+    }
 
-    private Double value;
+    public SensorData(String trainId, String pacisStatus, String cctvStatus, String rearViewStatus) {
+        this.trainId = trainId;
+        this.pacisStatus = pacisStatus;
+        this.cctvStatus = cctvStatus;
+        this.rearViewStatus = rearViewStatus;
+    }
 
-    private String unit;
+    public String getTrainId() {
+        return trainId;
+    }
 
-    private Double latitude;
-    private Double longitude;
+    public void setTrainId(String trainId) {
+        this.trainId = trainId;
+    }
 
-    private String status;
+    public String getPacisStatus() {
+        return pacisStatus;
+    }
+
+    public void setPacisStatus(String pacisStatus) {
+        this.pacisStatus = pacisStatus;
+    }
+
+    public String getCctvStatus() {
+        return cctvStatus;
+    }
+
+    public void setCctvStatus(String cctvStatus) {
+        this.cctvStatus = cctvStatus;
+    }
+
+    public String getRearViewStatus() {
+        return rearViewStatus;
+    }
+
+    public void setRearViewStatus(String rearViewStatus) {
+        this.rearViewStatus = rearViewStatus;
+    }
 }

@@ -178,3 +178,19 @@ services:
       - ./mosquitto/config:/mosquitto/config
     networks:
       - fleet-network
+
+  mqtt-device-simulator:
+    build:
+      context: ./mqtt-device-simulator
+      dockerfile: Dockerfile
+    container_name: fleet-mqtt-device-simulator
+    restart: unless-stopped
+    environment:
+      SIMULATOR_BROKER_URL: tcp://mosquitto:1883
+      SIMULATOR_TRAIN_ID: ${SIMULATOR_TRAIN_ID:-TRAIN-001}
+      SIMULATOR_INTERVAL_MS: ${SIMULATOR_INTERVAL_MS:-3000}
+    depends_on:
+      mosquitto:
+        condition: service_started
+    networks:
+      - fleet-network

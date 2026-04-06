@@ -1,14 +1,8 @@
 package actia.collector.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TrainRecord {
     @Id
     @Column(name = "train_id", nullable = false, unique = true)
@@ -22,5 +16,47 @@ public class TrainRecord {
 
     @Column(name = "rear_view_status")
     private String rearViewStatus;
+
+    public TrainRecord() {
+    }
+
+    public TrainRecord(String trainId, String pacisStatus, String cctvStatus, String rearViewStatus) {
+        this.trainId = trainId;
+        this.pacisStatus = pacisStatus;
+        this.cctvStatus = cctvStatus;
+        this.rearViewStatus = rearViewStatus;
+    }
+
+    public String getTrainId() {
+        return trainId;
+    }
+
+    public void setTrainId(String trainId) {
+        this.trainId = trainId;
+    }
+
+    public String getPacisStatus() {
+        return pacisStatus;
+    }
+
+    public void setPacisStatus(String pacisStatus) {
+        this.pacisStatus = pacisStatus;
+    }
+
+    public String getCctvStatus() {
+        return cctvStatus;
+    }
+
+    public void setCctvStatus(String cctvStatus) {
+        this.cctvStatus = cctvStatus;
+    }
+
+    public String getRearViewStatus() {
+        return rearViewStatus;
+    }
+
+    public void setRearViewStatus(String rearViewStatus) {
+        this.rearViewStatus = rearViewStatus;
+    }
 
 }

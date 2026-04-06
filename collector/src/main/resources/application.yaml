@@ -33,11 +33,11 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_URL:http://localhost:8080}/realms/fleet-management
 
-# # ── MQTT ──
-# mqtt:
-#   broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
-#   client-id:  collector-service-${random.uuid}
-#   topic:      fleet/equipment/+/telemetry
+# ── MQTT ──
+mqtt:
+  broker-url: ${MQTT_BROKER_URL:tcp://localhost:1883}
+  client-id: collector-service-${random.uuid}
+  topic: fleet/trains/+/status
 
 # ── Actuator ──
 management:
@@ -76,5 +76,7 @@ spring:
         jwt:
           issuer-uri: http://keycloak:8080/realms/fleet-management
 
-# mqtt:
-#   broker-url: tcp://mosquitto:1883
+mqtt:
+  broker-url: ${MQTT_BROKER_URL:tcp://mosquitto:1883}
+  client-id: collector-service-${random.uuid}
+  topic: fleet/trains/+/status
