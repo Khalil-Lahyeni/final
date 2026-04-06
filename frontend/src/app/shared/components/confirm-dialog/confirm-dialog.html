@@ -1,0 +1,28 @@
+<ng-container *ngIf="dialogService.currentDialog() as dialog">
+  <div class="dialog-backdrop" (click)="dialogService.backdropClick()">
+    <section
+      class="dialog-card"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'confirm-dialog-title'"
+      (click)="$event.stopPropagation()"
+    >
+      <h2 id="confirm-dialog-title" class="dialog-title">{{ dialog.title }}</h2>
+      <p class="dialog-message">{{ dialog.message }}</p>
+
+      <div class="dialog-actions">
+        <button class="dialog-button dialog-button-cancel" type="button" (click)="dialogService.cancel()">
+          {{ dialog.cancelText }}
+        </button>
+        <button
+          class="dialog-button dialog-button-confirm"
+          [class.dialog-button-danger]="dialog.danger"
+          type="button"
+          (click)="dialogService.confirm()"
+        >
+          {{ dialog.confirmText }}
+        </button>
+      </div>
+    </section>
+  </div>
+</ng-container>

@@ -1,8 +1,8 @@
-import { Component, computed, Input } from '@angular/core';
-import { CommonModule }     from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterModule }     from '@angular/router';
+import { Component, computed, EventEmitter, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/service/auth.service';
-import { Output, EventEmitter } from '@angular/core';
+import { DialogService } from '../../service/dialog.service';
 export interface NavItem {
   label: string;
   icon:  string;
@@ -17,7 +17,10 @@ export interface NavItem {
 })
 export class Sidebar {
   
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private dialogService: DialogService
+  ) {}
 
   isCollapsed = false;
   @Output() collapsedChange = new EventEmitter<boolean>();
@@ -30,8 +33,11 @@ export class Sidebar {
 
   readonly username = computed(() => this.authService.username());
 
-  logout(): void {
-    this.authService.logout();
+  async logout(): Promise<void> {
+    const confirmed = await this.dialogService.openConfirmLogout();
+    if (confirmed) {
+      this.authService.logout();
+    }
   }
 
 

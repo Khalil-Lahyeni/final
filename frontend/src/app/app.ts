@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Sidebar } from './shared/layout/sidebar/sidebar';
 import { environment } from '../environments/environment';
+import { ConfirmDialog } from './shared/components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, Sidebar],
+  imports: [CommonModule, RouterOutlet, Sidebar, ConfirmDialog],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
